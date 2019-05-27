@@ -2,6 +2,18 @@
 
 open System
 
+(*
+ * A calculator expression is "x op y"
+ * Quick explanation of the calculator state machine:
+ * The initial state is "waiting for x" (wfx for short)
+ * Upon receiving x, the new state is "waiting for operator" (wfop)
+ * - The wfop state contains the value for x
+ * Upon receiving the operator, the new state is wfy
+ * - The wfy state contains the values for x and op
+ * Upon receiving y, the result is calculated, printed, and put into x. The new state is wfop.
+ * This loop continues until something invalid is entered as a number or operator
+*)
+
 type Operator =
     | Plus
     | Minus
@@ -9,7 +21,6 @@ type Operator =
     | DividedBy
     | Invalid
 
-// A calculator expression is "x op y"
 type CalcState = 
     | WaitingForX
     | WaitingForOp of float
