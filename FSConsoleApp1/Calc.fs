@@ -19,7 +19,6 @@ type Operator =
     | Minus
     | Times
     | DividedBy
-    | Invalid
 
 type CalcState = 
     | WaitingForX
@@ -29,11 +28,11 @@ type CalcState =
 
 let toOperator s =
     match s with
-    | "+" -> Plus
-    | "-" -> Minus
-    | "*" -> Times
-    | "/" -> DividedBy
-    | _ -> Invalid
+    | "+" -> Some Plus
+    | "-" -> Some Minus
+    | "*" -> Some Times
+    | "/" -> Some DividedBy
+    | _ -> None
 
 let progressFromWfx =
     printfn "Give a number"
@@ -48,16 +47,15 @@ let progressFromWfop x =
     let input = Console.ReadLine()
     let inputAsOperator = toOperator input
     match inputAsOperator with
-    | Invalid -> Finished
-    | op -> WaitingForY (x, op)
+    | None -> Finished
+    | Some(op) -> WaitingForY (x, op)
 
-let calculate x op y =
+let calculate x (op:Operator) y =
     match op with
     | Plus -> x + y
     | Minus -> x - y
     | Times -> x * y
     | DividedBy -> x / y
-    | _ -> 0.0
 
 let transitionToWfop x op y =
     let result = calculate x op y
