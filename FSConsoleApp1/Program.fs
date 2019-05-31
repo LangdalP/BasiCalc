@@ -2,4 +2,4 @@
 
 [<EntryPoint>]
 let main argv =
-    Calc.calc_main
+    Calc.calcMain()

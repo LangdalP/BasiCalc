@@ -27,7 +27,7 @@ type CalcState =
     | WaitingForY of float * Operator
     | Finished
 
-let to_operator s =
+let toOperator s =
     match s with
     | "+" -> Plus
     | "-" -> Minus
@@ -35,7 +35,7 @@ let to_operator s =
     | "/" -> DividedBy
     | _ -> Invalid
 
-let progress_from_wfx =
+let progressFromWfx =
     printfn "Give a number"
     let input = Console.ReadLine()
     let inputAsFloat = Utils.parseFloat input
@@ -43,10 +43,10 @@ let progress_from_wfx =
     | Some(n) -> WaitingForOp n
     | None -> Finished
 
-let progress_from_wfop x =
+let progressFromWfop x =
     printfn "Give an operator (+, -, *, /)"
     let input = Console.ReadLine()
-    let inputAsOperator = to_operator input
+    let inputAsOperator = toOperator input
     match inputAsOperator with
     | Invalid -> Finished
     | op -> WaitingForY (x, op)
@@ -59,38 +59,42 @@ let calculate x op y =
     | DividedBy -> x / y
     | _ -> 0.0
 
-let transition_to_wfop x op y =
+let transitionToWfop x op y =
     let result = calculate x op y
     printfn "Current result: %A" result
     WaitingForOp result
 
-let progress_from_wfy x op =
+let progressFromWfy x op =
     printfn "Give a number"
     let input = Console.ReadLine()
     let inputAsFloat = Utils.parseFloat input
     match inputAsFloat with
-    | Some(n) -> transition_to_wfop x op n
+    | Some(n) -> transitionToWfop x op n
     | None -> Finished
     
-let next_state state =
+let nextState state =
     match state with
-    | WaitingForX -> progress_from_wfx
-    | WaitingForOp(x) -> progress_from_wfop x
-    | WaitingForY(x, op) -> progress_from_wfy x op
+    | WaitingForX -> progressFromWfx
+    | WaitingForOp(x) -> progressFromWfop x
+    | WaitingForY(x, op) -> progressFromWfy x op
     | Finished -> Finished
 
-let calc_main =
-    printfn "I am a basic calculator"
-
+let startLoop = fun () ->
     // TODO: Is there a better way? Unfold needs both next element and next state
-    let input_seq = Seq.unfold (fun state ->
+    let inputSeq = Seq.unfold (fun state ->
         match state with
         | Finished -> None
-        | unfinished_state ->
-            let new_state = next_state unfinished_state
-            Some (new_state, new_state)) WaitingForX
+        | unfinishedState ->
+            let newState = nextState unfinishedState
+            Some (newState, newState)) WaitingForX
 
-    for _ in input_seq do ()
-        
+    for _ in inputSeq do ()
+
+
+let calcMain = fun () ->
+    printfn "I am a basic calculator"
+
+    startLoop()
+
     printfn "Since you entered something invalid, I give up"
     0
